@@ -14,7 +14,7 @@ export const orgProcedure = protectedProcedure.use(tenantMiddleware);
 export const adminProcedure = orgProcedure.use(roleMiddleware);
 
 export const planGatedProcedure = (resource: ResourceKey) =>
-  protectedProcedure.use(createPlanGate(resource));
+  orgProcedure.use(createPlanGate(resource));
 
 export const permissionedProcedure = (
   resource: ResourceKey,

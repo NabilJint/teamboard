@@ -177,3 +177,19 @@ is closed.
 - user-2 (MEMBER) → 403 "Insufficient permissions"
 - Behavior unchanged from Phase 5a, code simpler
 
+## Phase 6 Step 3 — COMPLETE ✅
+
+**plan-gate.ts migrated:**
+- OLD: read x-organization-id + x-plan headers
+- NEW: read ctx.tenant.organizationId + ctx.tenant.plan (from DB)
+- planGatedProcedure now chains orgProcedure (tenant fires first)
+- x-plan header is dead — grep confirms no reads remain
+
+**Proven:**
+- Curl 1: DB FREE, no header → 403 blocked
+- Curl 2: DB PRO, no header → 200 succeeded
+- Curl 3: DB FREE + x-plan: PRO header → 403 (header ignored, DB wins)
+
+**Security win:** clients can no longer claim PRO by sending a header.
+Plan comes only from Organization.plan, which only the server writes.
+
