@@ -19,7 +19,7 @@ export const planGatedProcedure = (resource: ResourceKey) =>
 export const permissionedProcedure = (
   resource: ResourceKey,
   permission: string,
-) => protectedProcedure.use(createPermissionGate(resource, permission));
+) => orgProcedure.use(createPermissionGate(resource, permission));
 
 export const rateLimitedProcedure = (max: number, windowMs: number) =>
   protectedProcedure.use(createRateLimit(max, windowMs));

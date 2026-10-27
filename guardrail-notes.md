@@ -146,7 +146,34 @@ shape as planGatedProcedure. Both compose protectedProcedure.
   6. Rate limiting
   7. Audit + Usage
 
-## Phase 6 — NEXT: tenant middleware
-  Replace all x-organization-id header reads with ctx.tenant
-  Delete the GAP comments
-  Real membership lookup in tenantMiddleware
+## Phase 6 Step 1 — COMPLETE ✅
+
+**tenantMiddleware is real:**
+- reads x-organization-id (claim)
+- getMembershipRole verifies membership (proof)
+- org lookup for plan
+- sets ctx.tenant = { organizationId, userId, role, plan }
+- throws FORBIDDEN if not a member
+
+**Proven:**
+- user-1 + org-1 (OWNER) → 200
+- user-2 + org-1 (MEMBER) → 200
+- user-2 + org-2 (NOT member) → 403 "Not a member of this organization"
+
+**Why it matters:** Before Phase 6, the app trusted the header. Now it
+verifies. Same user, different org → different result. Cross-org leakage
+is closed.
+
+## Phase 6 Step 2 — COMPLETE ✅
+
+**permission.ts migrated:**
+- OLD: read x-organization-id header + getMembershipRole + role check
+- NEW: read ctx.tenant.role (set by tenantMiddleware) + role check
+- permissionedProcedure now chains orgProcedure (not protectedProcedure)
+  so ctx.tenant is guaranteed
+
+**Proven:**
+- user-1 (OWNER) → 200
+- user-2 (MEMBER) → 403 "Insufficient permissions"
+- Behavior unchanged from Phase 5a, code simpler
+
