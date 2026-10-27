@@ -1,11 +1,11 @@
 import { t } from "@/server/trpc/init";
-import { protectedProcedure } from "@/server/trpc/procedures";
+import { protectedProcedure, planGatedProcedure } from "@/server/trpc/procedures";
 import { projectSchema } from "@/lib/validators/project.schema";
 import { createProject, listProjects, type TenantScope } from "@/server/services/project.service";
 import { TRPCError } from "@trpc/server";
 
 export const projectRouter = t.router({
-  create: protectedProcedure
+  create: planGatedProcedure("project")
     .input(projectSchema)
     .mutation(async ({ ctx, input }) => {
       // GAP: Phase 6 — replace with ctx.tenant.organizationId after orgProcedure is wired.

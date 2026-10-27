@@ -15,13 +15,13 @@ async function main() {
   // Organizations (upsert: safe to re-run)
   await prisma.organization.upsert({
     where: { id: "org-1" },
-    update: {},
-    create: { id: "org-1", name: "Org One" },
+    update: { plan: "FREE" },
+    create: { id: "org-1", name: "Org One", plan: "FREE" },
   });
   await prisma.organization.upsert({
     where: { id: "org-2" },
-    update: {},
-    create: { id: "org-2", name: "Org Two" },
+    update: { plan: "FREE" },
+    create: { id: "org-2", name: "Org Two", plan: "FREE" },
   });
 
   // Memberships (upsert: safe to re-run)

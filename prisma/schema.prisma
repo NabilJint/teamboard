@@ -7,6 +7,11 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Plan {
+  FREE
+  PRO
+}
+
 model User {
   id        String    @id @default(cuid())
   email     String    @unique
@@ -20,7 +25,7 @@ model User {
 model Organization {
   id        String      @id @default(cuid())
   name      String
-  plan      String      @default("FREE")
+  plan      Plan        @default(FREE)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   projects  Project[]

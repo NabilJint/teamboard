@@ -1,3 +1,5 @@
+import type { Plan } from "@/server/resources";
+
 export interface Context {
   headers: Headers;
   user?: { id: string; email?: string; name?: string };
@@ -7,6 +9,7 @@ export interface Context {
     role: string;
     plan: string;
   };
+  plan?: Plan;
 }
 
 export function createContext(headers: Headers): Context {

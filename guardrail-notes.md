@@ -24,7 +24,12 @@
 - Seed parent rows (User, Organization) before creating children (Project)
 - Don't swallow errors in mapDomainError — log first
 
-## Phase 2 — NEXT
-- Build resources registry (plans, limits, permissions)
-- Add plan-limit gate to the Block
-- Swap getSession stub → Better Auth (one-file change)
+## Phase 2 — COMPLETE ✅
+**Registry:** src/server/resources.ts (project: FREE=1, PRO=∞; member: FREE=3, PRO=∞)
+**Rules:** src/server/rules.ts (canCreate, getUpgradeMessage — pure)
+**Gate:** src/server/trpc/middleware/plan-gate.ts (header-based plan, GAP: Phase 6)
+**Proof:**
+  - FREE + 1 existing project → 2nd create FORBIDDEN with upgrade msg
+  - PRO + 1 existing project → 2nd create succeeds
+**Plan type:** Prisma enum, single source of truth
+**Header pattern:** x-plan (temporary; Phase 6 moves to ctx.tenant.plan)
