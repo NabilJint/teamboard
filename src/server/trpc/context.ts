@@ -1,4 +1,5 @@
-import type { Plan } from "@/server/resources";
+import type { Plan, Role } from "@/generated/prisma/client";
+import type { Plan as ResourcesPlan } from "@/server/resources";
 
 export interface Context {
   headers: Headers;
@@ -6,10 +7,10 @@ export interface Context {
   tenant?: {
     organizationId: string;
     userId: string;
-    role: string;
-    plan: string;
+    role: Role;
+    plan: Plan;
   };
-  plan?: Plan;
+  plan?: ResourcesPlan;
 }
 
 export function createContext(headers: Headers): Context {
