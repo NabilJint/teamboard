@@ -33,3 +33,33 @@
   - PRO + 1 existing project → 2nd create succeeds
 **Plan type:** Prisma enum, single source of truth
 **Header pattern:** x-plan (temporary; Phase 6 moves to ctx.tenant.plan)
+
+## Phase 3 — COMPLETE ✅
+
+**Three files:**
+- eslint.config.mjs → bans any, @ts-ignore, @ts-expect-error
+- package.json → "typecheck": "tsc --noEmit"
+- .claude/CLAUDE.md → the rulebook (architecture, types, plans, git, delivery)
+
+**Proven:**
+- tsc allows `any` by design (no error)
+- ESLint rejects `any` (no-explicit-any)
+- Both run: `npm run typecheck` + `npm run lint`
+
+**Key insight:**
+- tsc = "does it type-check?" (shape correctness)
+- eslint = "does it follow rules?" (any, ts-ignore, etc.)
+- Two different guardrails, two different signals
+- Both fire automatically — no prompt engineering needed
+
+**CLAUDE.md rule:** Every future session knows:
+- Router → Service → Prisma flow
+- No any / no unknown / no ts-ignore
+- Run `npm run typecheck` before "done"
+- Never touch git
+
+## Phase 4 — NEXT
+- Server-only enforcement (import "server-only" in service files)
+- ESLint rule to catch missing server-only
+- This prevents server actions from being bundled to the client
+
