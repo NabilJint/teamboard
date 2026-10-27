@@ -58,8 +58,95 @@
 - Run `npm run typecheck` before "done"
 - Never touch git
 
-## Phase 4 — NEXT
-- Server-only enforcement (import "server-only" in service files)
-- ESLint rule to catch missing server-only
-- This prevents server actions from being bundled to the client
+## Phase 4 — COMPLETE ✅
 
+**Files:**
+- package.json: server-only dependency added
+- src/server/services/project.service.ts: import "server-only"
+- src/server/services/resource.service.ts: import "server-only"
+- eslint.config.mjs: custom rule custom/require-server-only
+
+**Proven:**
+- Remove server-only → lint fails with:
+  "File must start with import "server-only";"
+- Add back → lint passes
+- 9 pre-existing warnings (unused vars) — not from new rule
+
+**Why:** Without this, server actions can be bundled to the client.
+A hacker can find the bundle ID and call them directly, bypassing
+the Block. Now the service code physically cannot reach the browser.
+
+## Phase 5a — COMPLETE ✅
+
+**Permission gate:** src/server/trpc/middleware/permission.ts
+  - createPermissionGate(resource, permission) factory
+  - Reads orgId from x-organization-id (GAP: Phase 6)
+  - Looks up role via membership.service.getMembershipRole
+  - Checks RESOURCES[resource].permissions[role]
+  - Throws FORBIDDEN if role is null or permission missing
+
+**Role enum:** Prisma Role { OWNER, ADMIN, MEMBER }
+  - Typed, not string — TypeScript checks resource indexing
+
+**Proven:**
+  - user-1 (OWNER) → project.update succeeds
+  - user-2 (MEMBER) → project.update FORBIDDEN
+
+**Pattern:** permissionedProcedure(resource, permission) — same factory
+shape as planGatedProcedure. Both compose protectedProcedure.
+
+## Phase 5b — COMPLETE ✅
+
+**Rate limiter:** src/server/trpc/middleware/rate-limit.ts
+  - createRateLimit(maxCalls, windowMs) factory
+  - In-memory Map<userId, timestamps[]>
+  - clearRateLimitStore() helper for tests
+  - GAP: Phase 7 — replace with Redis for multi-instance
+
+**Procedure:** rateLimitedProcedure(max, windowMs) in procedures.ts
+
+**Proven:**
+  - project.ping with rateLimitedProcedure(3, 60000)
+  - Calls 1-3: 200 {ok:true}
+  - Call 4: 429 "Rate limit exceeded: 3 calls per 60000ms"
+
+**All guardrails proven (1-6):**
+  1. Auth (401)
+  2. Tenant isolation (org-1 vs org-2)
+  3. Plan limits (FREE 1 project, PRO unlimited)
+  4. Server-only (ESLint blocks missing import)
+  5. Permissions (OWNER 200, MEMBER 403)
+  6. Rate limiting (3 OK, 4th 429)
+
+## Phase 5c — COMPLETE ✅ (after resourceId fix)
+
+**Files:**
+- prisma/schema.prisma: AuditLog + Usage models
+- src/server/services/audit.service.ts: logAction (fire-and-forget)
+- src/server/services/usage.service.ts: incrementUsage + getUsage
+- src/server/trpc/middleware/audit-usage.ts: createAuditUsage
+- src/server/trpc/procedures.ts: auditedProcedure + gatedAuditedProcedure
+- src/server/routers/project.router.ts: project.create uses gatedAuditedProcedure
+
+**Composition:** Option B — gatedAuditedProcedure(resource, action)
+  planGatedProcedure(resource).use(createAuditUsage(action, resource))
+  Order: plan gate → audit → resolver. Blocked requests = no audit row.
+
+**Proven:**
+  - project.create → 1 AuditLog row + 1 Usage row
+  - Audit fires after success (not on blocked requests)
+  - resourceId = project.id (after fix)
+
+**All 7 guardrails proven:**
+  1. Auth
+  2. Tenant isolation
+  3. Plan limits
+  4. Server-only
+  5. Permissions
+  6. Rate limiting
+  7. Audit + Usage
+
+## Phase 6 — NEXT: tenant middleware
+  Replace all x-organization-id header reads with ctx.tenant
+  Delete the GAP comments
+  Real membership lookup in tenantMiddleware

@@ -55,7 +55,9 @@ export const ModelName = {
   Organization: 'Organization',
   Membership: 'Membership',
   Project: 'Project',
-  Task: 'Task'
+  Task: 'Task',
+  AuditLog: 'AuditLog',
+  Usage: 'Usage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -131,6 +133,29 @@ export const TaskScalarFieldEnum = {
 } as const
 
 export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum]
+
+
+export const AuditLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  organizationId: 'organizationId',
+  action: 'action',
+  resource: 'resource',
+  resourceId: 'resourceId',
+  createdAt: 'createdAt'
+} as const
+
+export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+export const UsageScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  resource: 'resource',
+  count: 'count'
+} as const
+
+export type UsageScalarFieldEnum = (typeof UsageScalarFieldEnum)[keyof typeof UsageScalarFieldEnum]
 
 
 export const SortOrder = {

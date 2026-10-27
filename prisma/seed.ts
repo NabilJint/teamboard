@@ -44,6 +44,26 @@ async function main() {
     },
   });
 
+  // User-2 as MEMBER in org-1
+  await prisma.user.upsert({
+    where: { id: "user-2" },
+    update: {},
+    create: {
+      id: "user-2",
+      email: "user-2@test.local",
+      name: "User Two",
+    },
+  });
+  await prisma.membership.upsert({
+    where: { userId_organizationId: { userId: "user-2", organizationId: "org-1" } },
+    update: { role: "MEMBER" },
+    create: {
+      userId: "user-2",
+      organizationId: "org-1",
+      role: "MEMBER",
+    },
+  });
+
   console.log("Seed complete");
 }
 

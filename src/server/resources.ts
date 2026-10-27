@@ -1,9 +1,14 @@
-import type { Plan } from "../generated/prisma/client";
+import type { Plan, Role } from "../generated/prisma/client";
 
 export const RESOURCES = {
   project: {
     FREE: 1,
     PRO: Infinity,
+    permissions: {
+      OWNER: ["project.create", "project.update", "project.delete"],
+      ADMIN: ["project.create", "project.update", "project.delete"],
+      MEMBER: [],
+    },
     upgradeMessage: "FREE plan allows 1 project. Upgrade to PRO.",
   },
   member: {
@@ -14,4 +19,4 @@ export const RESOURCES = {
 } as const;
 
 export type ResourceKey = keyof typeof RESOURCES;
-export type { Plan };
+export type { Plan, Role };

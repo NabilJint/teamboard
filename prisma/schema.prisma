@@ -32,11 +32,17 @@ model Organization {
   memberships Membership[]
 }
 
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
 model Membership {
   id            String   @id @default(cuid())
   userId        String
   organizationId String
-  role          String   @default("MEMBER")
+  role          Role     @default(MEMBER)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   user          User     @relation(fields: [userId], references: [id])
@@ -66,4 +72,26 @@ model Task {
   project     Project  @relation(fields: [projectId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model AuditLog {
+  id             String   @id @default(cuid())
+  userId         String
+  organizationId String
+  action         String
+  resource       String
+  resourceId     String?
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([userId, createdAt])
+}
+
+model Usage {
+  id             String @id @default(cuid())
+  organizationId String
+  resource       String
+  count          Int    @default(0)
+
+  @@unique([organizationId, resource])
 }

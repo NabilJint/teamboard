@@ -1,3 +1,5 @@
+import "server-only";
+
 import { prisma } from "@/server/db/prisma";
 import { type ResourceKey } from "@/server/resources";
 
