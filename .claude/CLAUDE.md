@@ -1,5 +1,12 @@
 # CLAUDE.md — TeamBoard Guardrails
 
+## COMPULSORY RULES (must be followed every turn — no exceptions)
+
+1. **Grep-first discovery — ALWAYS.** Before reading ANY file to understand or modify code, run `rg -l "SOT: <keyword>" src/` (or `./scripts/find-sot.sh <keyword>`). This returns file paths only (~10 tokens per path). Read ONLY the file whose path matches what you need. Do NOT read multiple files "to be safe." Use `rg -l` (paths only). Never use `rg` without `-l`. Never use `grep -rn` for discovery. Violating this = reading files blindly, which caused the color-hardcoding regression.
+2. **Never hardcode colors.** Use Tailwind semantic tokens (e.g., `text-foreground`, `bg-background`) and CSS custom properties from `src/app/globals.css`. Never use `text-white`, `bg-white`, `border-white`, `border-black`, or hex/RGB color literals. Light/dark mode must work via `globals.css` tokens.
+3. **Run `npm run typecheck` and `npm run lint` before saying "done."** Zero errors required. Warnings from pre-existing server files are acceptable; none from your code.
+4. **Never use git.** Do not commit, checkout, or read session history.
+
 ## Architecture
 Router → protectedProcedure/planGatedProcedure → Service → Prisma → DB
 - Router: business logic only, never imports Prisma

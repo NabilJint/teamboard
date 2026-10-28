@@ -512,3 +512,13 @@ total to ~35 min.
 3. comment (create, list)
 
 
+## Skill 1 — setup-guardrail-system — DONE ✅
+Location: .claude/skills/setup-guardrail-system/SKILL.md
+- 11 phases, build order, Block sub-stepped 7a–7h
+- 3 modes: fresh / verify / change
+- Stack-aware (Next.js full, Python placeholder)
+- Creates guardrail-notes.md on first run
+- Explain-like-5 hard rule
+- Project-local only
+
+
