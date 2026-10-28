@@ -193,3 +193,26 @@ is closed.
 **Security win:** clients can no longer claim PRO by sending a header.
 Plan comes only from Organization.plan, which only the server writes.
 
+## Phase 6 Step 4 — COMPLETE ✅
+
+**audit-usage.ts migrated:**
+- OLD: read x-organization-id from header
+- NEW: read ctx.tenant.organizationId + ctx.tenant.userId
+- auditedProcedure + gatedAuditedProcedure chain orgProcedure
+- resourceId extraction works (result.data.id)
+
+**Proven:**
+- project.create (org-2) → 200
+- AuditLog row: user-1, org-2, project.create, project, cmvr719eh... 
+  All fields from ctx.tenant, not headers
+- Usage count org-2/project incremented
+
+**Header reads eliminated:**
+- tenant.ts: reads x-organization-id (the ONLY file that does)
+- permission.ts: reads ctx.tenant.role ✅
+- plan-gate.ts: reads ctx.tenant.plan ✅
+- audit-usage.ts: reads ctx.tenant.organizationId ✅
+- x-plan header: gone entirely ✅
+
+## Phase 6 Step 5 — NEXT: migrate project.router.ts to ctx.tenant
+## Phase 6 Step 6 — FINAL: delete GAP: Phase 6 comments

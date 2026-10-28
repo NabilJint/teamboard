@@ -25,7 +25,7 @@ export const rateLimitedProcedure = (max: number, windowMs: number) =>
   protectedProcedure.use(createRateLimit(max, windowMs));
 
 export const auditedProcedure = (action: string, resource: ResourceKey) =>
-  protectedProcedure.use(createAuditUsage(action, resource));
+  orgProcedure.use(createAuditUsage(action, resource));
 
 export const gatedAuditedProcedure = (resource: ResourceKey, action: string) =>
   planGatedProcedure(resource).use(createAuditUsage(action, resource));

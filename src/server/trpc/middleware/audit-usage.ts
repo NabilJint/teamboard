@@ -1,35 +1,37 @@
 import { t } from "@/server/trpc/init";
-import { TRPCError } from "@trpc/server";
-import { type ResourceKey } from "@/server/resources";
-import { incrementUsage } from "@/server/services/usage.service";
 import { logAction } from "@/server/services/audit.service";
+import { incrementUsage } from "@/server/services/usage.service";
+import { type ResourceKey } from "@/server/resources";
 
-// GAP: Phase 6 — replace with ctx.tenant.organizationId after tenant middleware lands
 export function createAuditUsage(action: string, resource: ResourceKey) {
   return t.middleware(async ({ ctx, next }) => {
+    // Run resolver first — audit only fires on success
     const result = await next();
 
-    if (!ctx.user) {
-      throw new TRPCError({ code: "UNAUTHORIZED", message: "Not authenticated" });
+    // ctx.tenant is guaranteed — auditedProcedure chains orgProcedure
+    if (!ctx.tenant) {
+      // Resolver succeeded but no tenant — shouldn't happen. Log and continue.
+      console.error("audit-usage: no ctx.tenant, skipping audit");
+      return result;
     }
 
-    const organizationId = ctx.headers.get("x-organization-id");
-    if (!organizationId) {
-      throw new TRPCError({ code: "BAD_REQUEST", message: "Missing organization" });
-    }
-
+    // Extract id from result.data if present
     const data = (result as { ok?: boolean; data?: { id?: string } }).data;
     const resourceId = data?.id ?? null;
 
+    // Fire-and-forget — services swallow their own errors
     await logAction({
-      userId: ctx.user.id,
-      organizationId,
+      userId: ctx.tenant.userId,
+      organizationId: ctx.tenant.organizationId,
       action,
       resource,
       resourceId,
     });
 
-    await incrementUsage({ organizationId, resource });
+    await incrementUsage({
+      organizationId: ctx.tenant.organizationId,
+      resource,
+    });
 
     return result;
   });
