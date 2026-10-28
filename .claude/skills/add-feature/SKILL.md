@@ -196,6 +196,8 @@ Run `./scripts/find-sot.sh <component>` or grep for the closest existing page/co
 - Route-only components → `src/app/<route>/_components/`
 - Never hardcode colors (e.g., `text-white`). Use Tailwind tokens (`text-foreground`) so light/dark mode + `globals.css` work.
 - Use slots/props for shared components.
+- **When building UI, DO NOT read the source code of existing shadcn/ui components (e.g., button.tsx, input.tsx).** Assume they exist and follow standard shadcn usage. If you need to verify a token, read only `globals.css`.
+- **MAX 3 files read for UI features.**
 
 ### Step 3.2 — Propose
 
