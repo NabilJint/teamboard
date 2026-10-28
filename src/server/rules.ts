@@ -1,7 +1,5 @@
 import type { Plan, ResourceKey } from "@/server/resources";
 
-// GAP: Phase 3 — plan comes from header until tenant middleware lands
-
 export function canCreate(resource: ResourceKey, plan: Plan, currentCount: number): boolean {
   const limits: Record<ResourceKey, Record<Plan, number>> = {
     project: { FREE: 1, PRO: Infinity },

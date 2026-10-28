@@ -3,7 +3,6 @@ import "server-only";
 import { prisma } from "@/server/db/prisma";
 import { mapDomainError } from "@/server/errors";
 
-// GAP: Phase 2 — plan/role checks move to rules.ts.
 export interface TenantScope {
   organizationId: string;
   userId: string;

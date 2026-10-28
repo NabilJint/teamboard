@@ -216,3 +216,43 @@ Plan comes only from Organization.plan, which only the server writes.
 
 ## Phase 6 Step 5 — NEXT: migrate project.router.ts to ctx.tenant
 ## Phase 6 Step 6 — FINAL: delete GAP: Phase 6 comments
+
+## ALL PHASES COMPLETE ✅
+
+### The Block (in order):
+1. Request setup (timer, ctx with headers)
+2. Auth (getSession → ctx.user)
+3. Tenant (membership + plan → ctx.tenant)
+4. Permission (RESOURCES role check)
+5. Plan limits (RESOURCES count check, DB plan)
+6. Rate limit (in-memory Map, 429)
+7. Resolver (business logic)
+8. Audit log (post-success, fire-and-forget)
+9. Usage counter (post-success, increment)
+10. Response (or error if any middleware threw)
+
+### Single sources of truth:
+- Headers read once: tenant.ts
+- Plan: Organization.plan (DB)
+- Role: Membership.role (DB)
+- Permissions + limits: RESOURCES registry
+- Types: Prisma-generated
+- Rules: CLAUDE.md + ESLint
+
+### Eight guardrails, eight proofs:
+1. Auth → 401 without headers
+2. Tenant → 403 non-member
+3. Permissions → 403 MEMBER on update
+4. Plan → 403 FREE over limit
+5. Header spoof → ignored (DB wins)
+6. Rate limit → 429 on 4th call
+7. Audit → AuditLog row exists
+8. Usage → counter incremented
+
+### What this means for future features:
+Add a new feature (tasks, comments, etc.):
+1. Add to RESOURCES registry (limits + permissions)
+2. Add to services (DB access, server-only)
+3. Add router using orgProcedure (or a variant)
+4. Run the regression script
+5. Done — all 8 guardrails inherited automatically
