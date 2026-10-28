@@ -404,3 +404,19 @@ HOW (mechanism), accurate WHERE (names the caller)
   (gatedAuditedProcedure → planGatedProcedure → orgProcedure) and
   states the service doesn't know about the Block, only TenantScope
 
+## Phase 8c — COMPLETE ✅
+
+**Check 1:** grep -rn "SOT:" src/ → exactly 16 paths
+**Check 2:** Read-the-comment test passed for 3 files:
+  - audit.service.ts: fire-and-forget, called by audit-usage ✅
+  - membership.service.ts: called by tenant + permission ✅
+  - rules.ts: pure, testable, called by plan-gate ✅
+**Check 3:** grep -rl "SOT: tenant" / "permission" / "plan" → paths only ✅
+
+**Phase 8 FULLY COMPLETE.** 16 files with 8-line SOT blocks.
+Each answers what/why/how/where without reading code.
+
+**Note:** rg not installed. Used grep -rl as fallback. Phase 9 will
+install ripgrep.
+
+
