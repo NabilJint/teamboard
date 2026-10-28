@@ -350,3 +350,32 @@ not @/generated/prisma/client — avoids Prisma import in trpc layer.
 **What this prevents:** a future Claude session writing a Prisma query
 in a router (architectural drift). The linter catches it before the
 code runs.
+
+## Phase 8a — COMPLETE ✅
+
+**8 SOT blocks inserted (middleware + procedures + context):**
+- auth.ts: SOT: auth, session, getSession, authentication, middleware
+- tenant.ts: SOT: tenant, organization, membership, organizationId, multi-tenant isolation
+- permission.ts: SOT: permission, role, FORBIDDEN, authorization, access control
+- plan-gate.ts: SOT: plan, FREE, PRO, plan limit, quota, billing enforcement
+- rate-limit.ts: SOT: rate limit, 429, throttle, in-memory, abuse prevention
+- audit-usage.ts: SOT: audit, usage, logging, counter, telemetry, post-mutation
+- procedures.ts: SOT: tRPC, procedures, router context, middleware composition, THE BLOCK
+- context.ts: SOT: context, headers, user, tenant, tRPC context, request context
+
+**Format (8 lines per file):**
+  // SOT: <keywords>
+  // WHAT: <one sentence>
+  // WHY:  <one sentence — concrete risk it prevents>
+  // HOW:  <one sentence — actual mechanism>
+  // WHERE: <one sentence — who calls it>
+
+**Verified:** typecheck clean, lint 0 errors, grep returns 8 paths
+
+**Fixes applied:**
+- procedures.ts HOW: corrected to describe factory composition, not a
+  fixed order (avoids "assume all six run for every route" drift)
+- auth.ts WHERE: corrected to say it's the base of ALL org-scoped
+  procedures, not just protectedProcedure
+
+

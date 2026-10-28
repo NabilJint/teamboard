@@ -2,6 +2,12 @@ import { t } from "@/server/trpc/init";
 import { TRPCError } from "@trpc/server";
 import { type ResourceKey, RESOURCES } from "@/server/resources";
 
+// SOT: permission, role, FORBIDDEN, authorization, access control
+// WHAT: Checks that ctx.tenant.role has the required permission from RESOURCES[resource].permissions[role].
+// WHY: Without this, a MEMBER could call project.update or other admin-only actions they aren't authorized for.
+// HOW: Reads ctx.tenant.role set by tenantMiddleware; looks up permissions map; throws FORBIDDEN if permission missing.
+// WHERE: Wrapped by permissionedProcedure factory; used by project.update resolver.
+
 export function createPermissionGate(resource: ResourceKey, permission: string) {
   return t.middleware(async ({ ctx, next }) => {
     // ctx.tenant is guaranteed — permissionedProcedure chains orgProcedure

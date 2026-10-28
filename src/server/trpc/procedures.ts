@@ -9,6 +9,12 @@ import { createRateLimit } from "@/server/trpc/middleware/rate-limit";
 import { createAuditUsage } from "@/server/trpc/middleware/audit-usage";
 import { type ResourceKey } from "@/server/resources";
 
+// SOT: tRPC, procedures, router context, middleware composition, THE BLOCK
+// WHAT: Exports procedure factories (public, protected, org, planGated, permissioned, rateLimited, audited, gatedAudited) that compose the middleware chain.
+// WHY: Without this central composition point, each router would re-implement middleware wiring inconsistently.
+// HOW: Each factory composes t.procedure.use() calls, adding one middleware layer at a time. orgProcedure = protected + tenant. permissioned/planGated = orgProcedure + their gate. gatedAudited = planGated + audit. Order varies by factory — never assume all six run for every route.
+// WHERE: Imported by project.router.ts and health.router.ts to build typed tRPC routers.
+
 export const protectedProcedure = t.procedure.use(authMiddleware);
 export const orgProcedure = protectedProcedure.use(tenantMiddleware);
 export const adminProcedure = orgProcedure.use(roleMiddleware);
