@@ -1,4 +1,4 @@
-import type { Plan, Role } from "@/generated/prisma/client";
+import type { Plan, Role } from "@/server/resources";
 import type { Plan as ResourcesPlan } from "@/server/resources";
 
 export interface Context {

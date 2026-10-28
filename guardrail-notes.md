@@ -256,3 +256,97 @@ Add a new feature (tasks, comments, etc.):
 3. Add router using orgProcedure (or a variant)
 4. Run the regression script
 5. Done — all 8 guardrails inherited automatically
+
+# TeamBoard — Architectural Guardrail (COMPLETE)
+
+## What This Is
+A production-grade AI-assisted development system. Every feature
+inherits 8 guardrails automatically by calling orgProcedure (or a
+variant). No prompt engineering. No "please remember." The code
+enforces the rules.
+
+## The Block (execution order)
+1. Route handler → createContext(headers)
+2. authMiddleware → ctx.user (401 if missing)
+3. tenantMiddleware → ctx.tenant (403 if not a member)
+4. permissionMiddleware → RESOURCES[role] check (403)
+5. planGate → RESOURCES[limit] check (403)
+6. rateLimit → in-memory Map (429)
+7. Resolver → business logic only
+8. auditUsage → AuditLog + Usage (post-success, fire-and-forget)
+
+## Single Sources of Truth
+- Headers: read ONCE in tenant.ts. Everything else trusts ctx.tenant.
+- Plan: Organization.plan (DB). x-plan header is dead.
+- Role: Membership.role (DB).
+- Limits + permissions: RESOURCES registry (src/server/resources.ts).
+- Types: Prisma-generated. ESLint bans `any`.
+- Rules: CLAUDE.md + ESLint rules.
+- Services: `import "server-only"` enforced by custom ESLint rule.
+
+## Procedure Factories (compose as needed)
+- protectedProcedure → auth only
+- orgProcedure → auth + tenant
+- permissionedProcedure(resource, permission) → + permission
+- planGatedProcedure(resource) → + plan limit
+- rateLimitedProcedure(max, windowMs) → + rate limit
+- auditedProcedure(action, resource) → + audit/usage
+- gatedAuditedProcedure(resource, action) → plan + audit/usage
+
+## The 8 Guardrails + Their Proofs
+1. Auth → curl without headers = 401
+2. Tenant → non-member = 403
+3. Permissions → MEMBER on update = 403
+4. Plan → FREE over limit = 403
+5. Header spoof → x-plan: PRO ignored, DB wins
+6. Rate limit → 4th call in window = 429
+7. Usage → counter incremented on create
+8. Audit → AuditLog row with correct resourceId
+
+Regression script: test-guardrails.sh → 8 passed, 0 failed
+
+## To Add a New Feature (the payoff)
+1. Add resource to RESOURCES registry (limits + permissions)
+2. Add service method (import "server-only", org-scoped)
+3. Add router using orgProcedure or a variant
+4. Run test-guardrails.sh
+5. Done — all 8 guardrails inherited automatically
+
+Estimated time per feature: 5-10 minutes instead of hours.
+
+## Remaining Future Work (optional, marked with GAP comments)
+- Phase 7: Swap getSession stub → Better Auth (one-file change,
+  signature already matches)
+- Phase 7: Redis for rate limiting (adapter pattern)
+- Refactor: move org lookup from tenant.ts to organization.service
+- UI: dashboard, project list (backend is ready)
+
+## Gotchas Learned
+- Prisma 7 adapter-pg needs ssl: false for local Postgres
+- Restart dev server after adding new tRPC routes
+- tRPC v11 queries need GET, mutations need POST
+- tRPC v11 POST body needs {"json":{...}} wrapper
+- Queries: ?input=%7B%22json%22%3A%7B%7D%7D
+- Seed parent rows (User, Organization) before creating children
+- Don't swallow errors in mapDomainError — log first
+
+## Phase 7 — COMPLETE ✅
+
+**Database isolation enforced by ESLint:**
+- src/server/routers/** → no Prisma imports (paths + patterns)
+- src/server/trpc/** → no Prisma imports (paths + patterns)
+- tenant.ts → exempted (config override + GAP comment), needs org plan
+  before services run
+
+**Proven (4 tests):**
+1. @/server/db/prisma in router → lint error
+2. ../../db/prisma (relative) in router → lint error (patterns catch it)
+3. @prisma/client in middleware → lint error
+4. tenant.ts imports Prisma → passes (exception works)
+
+**Side fix:** context.ts imports Plan/Role from @/server/resources,
+not @/generated/prisma/client — avoids Prisma import in trpc layer.
+
+**What this prevents:** a future Claude session writing a Prisma query
+in a router (architectural drift). The linter catches it before the
+code runs.

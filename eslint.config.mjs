@@ -50,6 +50,48 @@ const eslintConfig = defineConfig([
       "custom/require-server-only": "error",
     },
   },
+  {
+    files: ["src/server/routers/**/*.ts"],
+    rules: {
+      "no-restricted-imports": ["error", {
+        paths: [
+          { name: "@prisma/client", message: "Routers must not import Prisma directly — use services layer" },
+          { name: "@/server/db/prisma", message: "Routers must not import Prisma directly — use services layer" },
+          { name: "../../generated/prisma/client", message: "Routers must not import Prisma directly — use services layer" },
+        ],
+        patterns: [
+          {
+            group: ["**/generated/prisma/**", "**/db/prisma*"],
+            message: "Routers must not import Prisma directly — use services layer",
+          },
+        ],
+      }],
+    },
+  },
+  {
+    files: ["src/server/trpc/**/*.ts"],
+    rules: {
+      "no-restricted-imports": ["error", {
+        paths: [
+          { name: "@prisma/client", message: "Middleware must not import Prisma directly — use services layer" },
+          { name: "@/server/db/prisma", message: "Middleware must not import Prisma directly — use services layer" },
+          { name: "../../generated/prisma/client", message: "Middleware must not import Prisma directly — use services layer" },
+        ],
+        patterns: [
+          {
+            group: ["**/generated/prisma/**", "**/db/prisma*"],
+            message: "Middleware must not import Prisma directly — use services layer",
+          },
+        ],
+      }],
+    },
+  },
+  {
+    files: ["src/server/trpc/middleware/tenant.ts"],
+    rules: {
+      "no-restricted-imports": "off",
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
