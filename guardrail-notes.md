@@ -330,6 +330,17 @@ Estimated time per feature: 5-10 minutes instead of hours.
 - Seed parent rows (User, Organization) before creating children
 - Don't swallow errors in mapDomainError — log first
 
+## Better Auth swap (session.ts SIT-1 → real auth) ✅
+- src/server/auth/session.ts: getSession now delegates to auth.api.getSession({ headers })
+  (cookie-backed), replacing the x-user-id stub. expiresAt is coerced via new Date(...).
+- src/server/auth/auth.ts: betterAuth with prismaAdapter(prisma, { provider: "postgresql" }).
+- src/app/api/auth/[...]/route.ts: toNextJsHandler(auth) exposes /api/auth/*.
+- Passwords are scrypt "salt:key" hashes (Better Auth's hashPassword), NOT bcrypt.
+- getSession reads the better-auth.session_token cookie; x-user-id is ignored for identity.
+- Multi-tenancy still uses x-organization-id (ctx.tenant) — unchanged.
+- tsx prisma/seed.ts does NOT auto-load .env.local; pass DATABASE_URL explicitly.
+- Restart dev server after adding the auth route so Next.js picks it up.
+
 ## Phase 7 — COMPLETE ✅
 
 **Database isolation enforced by ESLint:**

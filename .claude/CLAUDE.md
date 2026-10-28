@@ -25,6 +25,15 @@ Router → protectedProcedure/planGatedProcedure → Service → Prisma → DB
 - Do not hardcode "FREE" or "PRO" elsewhere
 - Plan type comes from Prisma enum
 
+## Authentication
+- Self-hosted Better Auth (Prisma adapter, Postgres), NOT Neon managed auth
+- src/server/auth/auth.ts — betterAuth instance with prismaAdapter(prisma, { provider: "postgresql" })
+- src/server/auth/session.ts — getSession(headers) delegates to auth.api.getSession (cookie-backed sessions)
+- src/app/api/auth/[...]/route.ts — Next.js handler exposing /api/auth/* (sign-in, get-session, etc.)
+- Sessions are cookie-based (better-auth.session_token). The Block's authMiddleware calls getSession;
+  x-user-id is no longer used for identity. Multi-tenancy still uses x-organization-id (ctx.tenant).
+- Passwords stored as scrypt "salt:key" hashes (Better Auth's hashPassword), never bcrypt.
+
 ## Git
 - NEVER use git. Do not commit, checkout, or read session history.
 
