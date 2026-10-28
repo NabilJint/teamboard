@@ -522,3 +522,16 @@ Location: .claude/skills/setup-guardrail-system/SKILL.md
 - Project-local only
 
 
+## Skill 2 — add-feature — DONE ✅
+Location: .claude/skills/add-feature/SKILL.md
+- 14 hard rules (explain-like-5 is rule 2, prominent)
+- 7 steps (0–7, no gaps)
+- 2 feature types: DATA (CRUD), UI (page/component)
+- Hand-off to setup skill for system changes
+- Stack sub-recipes for DB performance (Prisma full, SQLAlchemy placeholder)
+- Read cap ≤3, 4 curls, 8/8 regression, never git
+- Report template at end
+
+## Both skills complete:
+1. setup-guardrail-system — builds/updates the system (11 phases, 3 modes)
+2. add-feature — builds one feature (14 rules, 7 steps, data + UI recipes)
