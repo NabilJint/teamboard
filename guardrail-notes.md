@@ -483,3 +483,32 @@ Mechanism: rg -l returns paths (~10 tokens each), then read exactly
 - Fix: cap reads in prompt, list known signatures upfront
 
 **Target for next feature:** 30 min, ≤3 reads
+
+## Comment Feature — COMPLETE ✅ (third feature, pattern proven)
+
+**Built in:** 50 min, 3 reads, 3 new + 5 edits
+**Regression:** 8/8
+**Cross-org guard:** comment.create bad taskId → 404 ✅
+
+**Pattern is now proven repeatable:**
+- task (50 min, 4 reads) → comment (50 min, 3 reads)
+- Same 12-step recipe, same 4 curls, same 8/8 regression
+- The router has zero guardrail code in both
+
+**Time breakdown (why still 50 min):**
+- Proposal: 8 min (read 3, plan)
+- Writing: 15 min (3 new + 5 edits)
+- Migration: 3 min
+- Regression + curls: 10 min
+- Verification loop: 14 min
+
+**Next optimization (not required):** scaffold-resource.sh script
+to generate the 3 new files from a template. Writing drops to ~5 min,
+total to ~35 min.
+
+**Three features, all inherit all 8 guardrails:**
+1. project (create, list, update)
+2. task (create, list)
+3. comment (create, list)
+
+

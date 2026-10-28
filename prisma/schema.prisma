@@ -12,6 +12,22 @@ enum Plan {
   PRO
 }
 
+model Comment {
+  id          String     @id @default(cuid())
+  content     String
+  taskId      String
+  organizationId String
+  authorId    String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  task        Task       @relation(fields: [taskId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+  author      User?      @relation(fields: [authorId], references: [id])
+
+  @@index([organizationId])
+  @@index([taskId])
+}
+
 model User {
   id        String    @id @default(cuid())
   email     String    @unique
@@ -21,6 +37,7 @@ model User {
   projects  Project[]
   memberships Membership[]
   tasks     Task[]
+  comments  Comment[]
 }
 
 model Organization {
@@ -32,6 +49,7 @@ model Organization {
   projects  Project[]
   memberships Membership[]
   tasks     Task[]
+  comments  Comment[]
 }
 
 enum Role {
@@ -84,6 +102,7 @@ model Task {
   project     Project    @relation(fields: [projectId], references: [id])
   organization Organization @relation(fields: [organizationId], references: [id])
   assignee    User?      @relation(fields: [assigneeId], references: [id])
+  comments    Comment[]
 
   @@index([organizationId])
   @@index([projectId])
