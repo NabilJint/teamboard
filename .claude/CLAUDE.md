@@ -42,25 +42,21 @@ Keywords available (16 SOT blocks):
 - project, membership, usage, session, resource, audit
 
 
-## Phase 9 — COMPLETE ✅
 
-**What it does:** Grep-first discovery. Find the file before reading it.
-`rg -l "SOT: <keyword>"` returns paths only (~10 tokens) instead of
-file contents (~500-2000 tokens per file).
+## UI / Component Rules
+- Check for a reusable component first. Never duplicate similar
+  functionality. Extend or compose what's there.
+- If you catch yourself copying a pattern from another component,
+  globalize it instead.
+- Global components → src/components/global/
+- Route-only components → src/app/<route>/_components/
+- Never hardcode colors (e.g., text-white). Use Tailwind tokens
+  (e.g., text-foreground) so light/dark mode + global.css work.
+- Use slots/props for shared components (e.g., header with slots).
 
-**Built:**
-- ripgrep 15.2.0 installed
-- scripts/find-sot.sh <keyword> — wrapper for rg -l
-- .claude/CLAUDE.md: Grep-First Discovery section added
-  - "Before reading any file, run rg -l / find-sot.sh"
-  - "Use rg -l (paths only). Never rg without -l. Never grep -rn."
-  - 16 keywords listed
-
-**Tested:**
-- ./scripts/find-sot.sh auth → 3 paths (auth.ts, session.ts, permission.ts)
-- ./scripts/find-sot.sh tenant → 2 paths (context.ts, tenant.ts)
-
-**Token savings:** Discovery drops from ~5 file reads (~8,000 tokens)
-to 1 grep + 1 read (~500 tokens). ~99% savings on discovery questions.
-
-## Phase 10 — NEXT: Zod validation + UI rules
+## Validation Rules
+- Every router input must use a Zod schema from src/lib/validators/.
+- Do NOT use inline z.object() in routers — put schemas in the
+  validators folder so they can be shared with client forms.
+- Schemas must match what the service actually does. Do not validate
+  fields the service ignores.

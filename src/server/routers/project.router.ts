@@ -1,8 +1,7 @@
 import { t } from "@/server/trpc/init";
 import { protectedProcedure, planGatedProcedure, permissionedProcedure, rateLimitedProcedure, gatedAuditedProcedure, orgProcedure } from "@/server/trpc/procedures";
-import { projectSchema } from "@/lib/validators/project.schema";
+import { projectSchema, projectUpdateSchema } from "@/lib/validators/project.schema";
 import { createProject, listProjects, type TenantScope } from "@/server/services/project.service";
-import { z } from "zod";
 
 export const projectRouter = t.router({
   create: gatedAuditedProcedure("project", "project.create")
@@ -26,7 +25,7 @@ export const projectRouter = t.router({
   }),
 
   update: permissionedProcedure("project", "project.update")
-    .input(z.object({ id: z.string(), name: z.string() }))
+    .input(projectUpdateSchema)
     .mutation(async () => {
       return { message: "update placeholder" };
     }),
