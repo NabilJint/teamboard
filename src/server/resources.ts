@@ -22,6 +22,16 @@ export const RESOURCES = {
     PRO: Infinity,
     upgradeMessage: "FREE plan allows 3 members. Upgrade to PRO.",
   },
+  task: {
+    FREE: 5,
+    PRO: Infinity,
+    permissions: {
+      OWNER: ["task.create", "task.update", "task.delete"],
+      ADMIN: ["task.create", "task.update", "task.delete"],
+      MEMBER: ["task.create", "task.update"],
+    },
+    upgradeMessage: "FREE plan allows 5 tasks per organization. Upgrade to PRO.",
+  },
 } as const;
 
 export type ResourceKey = keyof typeof RESOURCES;

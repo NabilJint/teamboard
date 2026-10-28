@@ -463,3 +463,23 @@ Mechanism: rg -l returns paths (~10 tokens each), then read exactly
 - Validation Rules (Zod from validators, no inline, match service)
 
 **Verified:** typecheck clean, lint 0 errors, grep shows 2 .input() calls
+
+## Task Feature — COMPLETE ✅ (first new feature after the Block)
+
+**Built in:** 50 min, 4 reads, 3 new files + 5 edits
+**Regression:** 8/8 still pass
+
+**What it proved:**
+- New feature inherits all 8 guardrails automatically
+- task.router.ts has ZERO guardrail code — just
+  gatedAuditedProcedure("task", "task.create") and orgProcedure
+- Service-layer check for cross-org projectId (curl 2 → 404)
+- Usage counter works with new resource ("task")
+- Audit logs task.create
+
+**Why 50 min not 30:**
+- Read errors.ts + package.json unnecessarily (should use SOT comments)
+- Missing: _app.ts mount was essential; usage.service read was legit
+- Fix: cap reads in prompt, list known signatures upfront
+
+**Target for next feature:** 30 min, ≤3 reads

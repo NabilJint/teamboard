@@ -126,8 +126,10 @@ export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeo
 export const TaskScalarFieldEnum = {
   id: 'id',
   title: 'title',
-  description: 'description',
+  status: 'status',
   projectId: 'projectId',
+  organizationId: 'organizationId',
+  assigneeId: 'assigneeId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

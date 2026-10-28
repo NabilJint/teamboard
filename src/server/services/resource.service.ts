@@ -18,6 +18,8 @@ export async function countResource(
       return prisma.project.count({ where: { organizationId } });
     case "member":
       return prisma.membership.count({ where: { organizationId } });
+    case "task":
+      return prisma.task.count({ where: { organizationId } });
     default:
       throw new Error(`Unhandled resource: ${resource}`);
   }
