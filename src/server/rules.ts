@@ -1,5 +1,11 @@
 import type { Plan, ResourceKey } from "@/server/resources";
 
+// SOT: rules, canCreate, getUpgradeMessage, pure functions, plan logic
+// WHAT: Pure functions canCreate and getUpgradeMessage with no Prisma, no tRPC, and no side effects.
+// WHY: Pure logic can run on server or client and is fully testable without mocking database or tRPC dependencies.
+// HOW: Takes resource, plan, and count as arguments; returns boolean or message string; imports only type definitions from resources.ts.
+// WHERE: Imported by plan-gate.ts to enforce plan limits on project creation.
+
 export function canCreate(resource: ResourceKey, plan: Plan, currentCount: number): boolean {
   const limits: Record<ResourceKey, Record<Plan, number>> = {
     project: { FREE: 1, PRO: Infinity },

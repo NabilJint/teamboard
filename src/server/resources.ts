@@ -1,5 +1,11 @@
 import type { Plan, Role } from "../generated/prisma/client";
 
+// SOT: resources, RESOURCES, plan limits, permissions, single source of truth
+// WHAT: Exports RESOURCES object with plan limits (FREE/PRO) and role-based permission maps for project and member resources.
+// WHY: Without a single source of truth, plan limits and permissions could diverge between server middleware and future client-side feature gates.
+// HOW: Plan type comes from Prisma enum (not declared locally); exports Plan and ResourceKey types shared by rules.ts and middleware.
+// WHERE: Imported by rules.ts, plan-gate.ts, permission.ts, and project.router.ts.
+
 export const RESOURCES = {
   project: {
     FREE: 1,

@@ -379,3 +379,28 @@ code runs.
   procedures, not just protectedProcedure
 
 
+## Phase 8b — COMPLETE ✅
+
+**8 SOT blocks inserted (services + registries):**
+- resources.ts: SOT: resources, RESOURCES, plan limits, permissions, single source of truth
+- rules.ts: SOT: rules, canCreate, getUpgradeMessage, pure functions, plan logic
+- project.service.ts: SOT: project service, createProject, listProjects, TenantScope, DB writes
+- resource.service.ts: SOT: resource service, countResource, DB reads, counts
+- membership.service.ts: SOT: membership service, getMembershipRole, role lookup, DB read
+- audit.service.ts: SOT: audit service, logAction, AuditLog, fire-and-forget, write-only
+- usage.service.ts: SOT: usage service, incrementUsage, getUsage, Usage counter, metering
+- session.ts: SOT: session, getSession, auth stub, SIT-1, authentication
+
+**Total: 16 SOT blocks (8a + 8b)**
+
+**All 8 have:** specific WHAT, concrete WHY (names the risk), actual
+HOW (mechanism), accurate WHERE (names the caller)
+
+**Fixes applied in 8b:**
+- session.ts WHY: removed stale "Phase 2 replaces body", now says
+  "Better Auth is still deferred; swap is a future phase"
+- session.ts HOW: mentions hardcoded 24h expiry
+- project.service.ts WHERE: names the full chain
+  (gatedAuditedProcedure → planGatedProcedure → orgProcedure) and
+  states the service doesn't know about the Block, only TenantScope
+

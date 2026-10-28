@@ -2,6 +2,12 @@ import "server-only";
 
 import { prisma } from "@/server/db/prisma";
 
+// SOT: usage service, incrementUsage, getUsage, Usage counter, metering
+// WHAT: Increments and reads Usage counter rows tracking resource consumption per organization.
+// WHY: Without a dedicated service, usage tracking would be scattered across routers and middleware, making metering unreliable.
+// HOW: Imports "server-only"; upserts Usage row with count increment; getUsage returns count or 0 on error.
+// WHERE: Called by audit-usage.ts middleware after successful mutation.
+
 export async function incrementUsage(params: {
   organizationId: string;
   resource: string;
