@@ -13,6 +13,8 @@ description: Builds or updates the architectural guardrail system for the curren
 4. **Never run git.** Do not commit, checkout, or read session history.
 5. **Read `CLAUDE.md`. Read `guardrail-notes.md` only if it exists (created on first run at Phase 11).**
 6. **Respect the read cap.** Read at most 3 files per step unless the user explicitly authorizes more.
+   EXCEPTION: In 'change' mode, the read cap is lifted to 15 files.
+   System changes have a wide blast radius and require reading more context.
 7. **Always explain in super simple terms — like I'm 5.** Short sentences. No jargon. Say what and why before how.
 
 ---

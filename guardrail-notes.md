@@ -329,6 +329,7 @@ Estimated time per feature: 5-10 minutes instead of hours.
 - Queries: ?input=%7B%22json%22%3A%7B%7D%7D
 - Seed parent rows (User, Organization) before creating children
 - Don't swallow errors in mapDomainError — log first
+- GOTCHA: Better Auth uses scrypt, not bcrypt. If seeding users, use Better Auth's hashPassword function. bcrypt will cause 'Invalid password hash' errors.
 
 ## Better Auth swap (session.ts SIT-1 → real auth) ✅
 - src/server/auth/session.ts: getSession now delegates to auth.api.getSession({ headers })
